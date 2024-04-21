@@ -1,0 +1,25 @@
+Description: use proper format string specifier for size_t
+ On its help, the program uses the %ld format string specifier for size_t
+ values.  This compiles fine for amd64, but causes FTBFS on i386.
+ .
+ This patch uses the %zu format string specifier to format size_t values.
+Author: David da Silva Polverari <polverari@debian.org>
+Last-Update: 2024-01-20
+
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -137,11 +137,11 @@
+             case 'h':
+                 printf("PipeWalker game version " APP_VERSION ".\n");
+                 printf("Usage: %s [OPTION...]\n", argv[0]);
+-                printf("  -i, --id=ID          set level Id (1-%ld)\n",
++                printf("  -i, --id=ID          set level Id (1-%zu)\n",
+                        Level::max_id);
+-                printf("  -c, --width=COLUMNS  set level width (%ld-%ld)\n",
++                printf("  -c, --width=COLUMNS  set level width (%zu-%zu)\n",
+                        Level::min_size, Level::max_size);
+-                printf("  -r, --height=ROWS    set level height (%ld-%ld)\n",
++                printf("  -r, --height=ROWS    set level height (%zu-%zu)\n",
+                        Level::min_size, Level::max_size);
+                 puts("  -w, --no-wrap        disable warp mode");
+                 puts("  -s, --no-sound       disable sound");

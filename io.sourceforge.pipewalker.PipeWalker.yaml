@@ -3,6 +3,7 @@ runtime: org.freedesktop.Platform
 runtime-version: '23.08'
 sdk: org.freedesktop.Sdk
 rename-desktop-file: pipewalker.desktop
+rename-icon: pipewalker
 command: pipewalker
 finish-args:
   - --device=dri
@@ -12,20 +13,33 @@ finish-args:
   - --socket=pulseaudio
 
 modules:
-  - shared-modules/glu/glu-9.json
-  - shared-modules/SDL/sdl12-compat.json
-
   - name: pipewalker
-    buildsystem: autotools
+    buildsystem: meson
+    config-opts:
+      - -Dbuildtype=release
     post-install:
-      - desktop-file-edit --set-icon=${FLATPAK_ID} ${FLATPAK_DEST}/share/applications/pipewalker.desktop
-      - install -Dm644 ${FLATPAK_ID}.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/${FLATPAK_ID}.png
-      - install -Dm644 ${FLATPAK_ID}.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
+      - install -Dm644 ../${FLATPAK_ID}.png ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/pipewalker.png
+      - install -Dm644 ../${FLATPAK_ID}.metainfo.xml ${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml
     sources:
-      - type: archive
-        url: http://downloads.sourceforge.net/pipewalker/pipewalker-0.9.4.tar.gz
-        sha256: d6d7717f1f333847cc4a2e9d83e97b971b3bfb539d99d4ae30a5140de6e386f4
+      - type: git
+        url: https://github.com/artemsen/pipewalker
+        tag: 'v1.0'
+        commit: 9044b9d79d226d22dce3ae1f26340370139e6e35
+        x-checker-data:
+          type: git
+          tag-pattern: "^v([\\d.]+)$"
+          is-main-source: true
       - type: file
         path: io.sourceforge.pipewalker.PipeWalker.png
       - type: file
         path: io.sourceforge.pipewalker.PipeWalker.metainfo.xml
+      # from Fedora
+      - type: patch
+        path: 0002-no-games-subdir-for-data.patch
+      - type: patch
+        path: 0003-fix-levels-being-already-solved.patch
+      # from Debian
+      - type: patch
+        path: 010_match-templated-args.patch
+      - type: patch
+        path: 020_use-size_t-format-string.patch

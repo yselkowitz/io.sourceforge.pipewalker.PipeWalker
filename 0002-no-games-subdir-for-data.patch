@@ -1,0 +1,13 @@
+--- a/meson.build
++++ b/meson.build
+@@ -32,9 +32,9 @@
+ if get_option('buildtype') == 'debug'
+   data_dir = join_paths(meson.current_source_dir(), 'data')
+ else
+   data_dir = join_paths(get_option('prefix'), get_option('datadir'),
+-                        'games', meson.project_name())
++                        meson.project_name())
+ endif
+ 
+ # installation
+ install_data(

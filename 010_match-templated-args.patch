@@ -1,0 +1,57 @@
+Description: match types for both parameters in functions  f<T>(T, T)
+ Some templated functions of type f<T>(T, T) on the code  were  relying  on
+ template argument deduction from function arguments, but calling code  was
+ using different types on each parameter.  This compiled fine on amd64, but
+ caused the build to fail on i386.
+ .
+ This  patch  replaces  the literals on those calls by static_casting those
+ literals to size_t.
+ .
+ PS: C++23 size_t literals could be used, if the application target that.
+Author: David da Silva Polverari <polverari@debian.org>
+Last-Update: 2024-01-19
+
+--- a/src/layout.cpp
++++ b/src/layout.cpp
+@@ -43,7 +43,7 @@
+     level_height = height;
+ 
+     // size of header and footer
+-    size_t header_h = std::min(64ul, static_cast<size_t>(window.h) / 10);
++    size_t header_h = std::min(static_cast<size_t>(64ul), static_cast<size_t>(window.h) / 10);
+ 
+     // size of a single puzzle cell
+     const int max_wnd_w = window.w - padding * 2;
+--- a/src/level.cpp
++++ b/src/level.cpp
+@@ -15,8 +15,8 @@
+     std::fill(cells.begin(), cells.end(), Cell {});
+ 
+     // install sender (server)
+-    sender.x = mtrand::get(1ul, width - 1);
+-    sender.y = mtrand::get(1ul, height - 1);
++    sender.x = mtrand::get(static_cast<size_t>(1ul), width - 1);
++    sender.y = mtrand::get(static_cast<size_t>(1ul), height - 1);
+     get_cell(sender).object = Cell::Sender;
+ 
+     const size_t max_recievers = cells.size() / 5;
+@@ -146,7 +146,7 @@
+     }
+ 
+     // get random position
+-    const size_t free_index = mtrand::get(0ul, free_cells.size());
++    const size_t free_index = mtrand::get(static_cast<size_t>(0ul), free_cells.size());
+     const Position& reciever = free_cells[free_index];
+ 
+     // find path from receiver to sender
+@@ -176,8 +176,8 @@
+         sides.push_back(Side::Top);
+         sides.push_back(Side::Bottom);
+         for (size_t i = 0; i < 4; ++i) {
+-            const size_t index0 = mtrand::get(0ul, sides.size());
+-            const size_t index1 = mtrand::get(0ul, sides.size());
++            const size_t index0 = mtrand::get(static_cast<size_t>(0ul), sides.size());
++            const size_t index1 = mtrand::get(static_cast<size_t>(0ul), sides.size());
+             std::iter_swap(sides.begin() + index0, sides.begin() + index1);
+         }
+     } else {

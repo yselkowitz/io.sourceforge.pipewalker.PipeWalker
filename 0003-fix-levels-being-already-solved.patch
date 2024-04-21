@@ -1,0 +1,18 @@
+diff -r -U4 pipewalker-1.0--orig/src/game.cpp pipewalker-1.0--patched/src/game.cpp
+--- pipewalker-1.0--orig/src/game.cpp	2024-01-14 10:10:02.000000000 +0100
++++ pipewalker-1.0--patched/src/game.cpp	2024-02-07 22:19:05.965164428 +0100
+@@ -437,14 +437,9 @@
+         level.generate();
+         layout.update(level.width, level.height);
+     }
+ 
+-#ifdef DEBUG
+-    level.get_cell(level.sender).rotate(false);
+-#else
+     level.reset();
+-#endif // DEBUG
+-
+     level.update();
+ }
+ 
+ void Game::create_fireworks()
